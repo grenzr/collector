@@ -36,7 +36,7 @@ module Collector
       # @param [String, Symbol] job the job name
       def register(job)
         job = job.to_s
-        Config.logger.info("Registering handler: #{self} for job: #{job}")
+        @logger.info("Registering handler: #{self} for job: #{job}")
         raise "Job: #{job} already registered" if Handler.handler_map.has_key?(job)
         Handler.handler_map[job] = self
       end

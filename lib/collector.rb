@@ -57,6 +57,13 @@ module Collector
 
         setup_timers
       end
+
+      # Now we are at the end of the initialization phase of the collector, so we want to
+      # load all the handlers dynamically.
+      Dir[File.join(File.dirname(__FILE__), "../lib/collector/handlers/*.rb")].each do |file|
+        require File.join("collector/handlers", File.basename(file, File.extname(file)))
+      end
+
     end
 
     # Configures the periodic timers for collecting varzs.
@@ -219,8 +226,4 @@ module Collector
     end
 
   end
-end
-
-Dir[File.join(File.dirname(__FILE__), "../lib/collector/handlers/*.rb")].each do |file|
-  require File.join("collector/handlers", File.basename(file, File.extname(file)))
 end

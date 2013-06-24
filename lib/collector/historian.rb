@@ -7,20 +7,22 @@ module Collector
     def self.build
       historian = new
 
+      @logger = Config.logger
+
       if Config.tsdb
         historian.add_adapter(Historian::Tsdb.new(Config.tsdb_host, Config.tsdb_port))
-        ::Collector::Config.logger.info("Adding historian adapter for TSDB #{Config.tsdb_host}")
+        @logger.info("Adding historian adapter for TSDB #{Config.tsdb_host}")
       end
 
       if Config.aws_cloud_watch
         historian.add_adapter(Historian::CloudWatch.new(Config.aws_access_key_id, Config.aws_secret_access_key))
-        ::Collector::Config.logger.info("Adding historian adapter for CloudWatch with AWS access key #{Config.aws_access_key_id}")
+        @logger.info("Adding historian adapter for CloudWatch with AWS access key #{Config.aws_access_key_id}")
       end
 
       if Config.datadog
         historian.add_adapter(Historian::DataDog.new(Config.datadog_api_key, Config.datadog_application_key))
-        ::Collector::Config.logger.info("Adding historian adapter for DataDog with api key #{Config.datadog_api_key} " \
-                                        "and application key #{Config.datadog_application_key}")
+        @logger.info("Adding historian adapter for DataDog with api key #{Config.datadog_api_key} " \
+                     "and application key #{Config.datadog_application_key}")
       end
 
       historian
@@ -35,10 +37,10 @@ module Collector
     def send_data(data)
       adapters.each do |adapter|
         begin
-          ::Collector::Config.logger.debug("Sending data to #{adapter.class.name}: #{data}")
+          @logger.debug("Sending data to #{adapter.class.name}: #{data}")
           adapter.send_data(data)
         rescue => e
-          ::Collector::Config.logger.warn("Error sending data to #{adapter.class.name}: #{e.inspect} - #{e.message}")
+          @logger.warn("Error sending data to #{adapter.class.name}: #{e.inspect} - #{e.message}")
         end
       end
     end
